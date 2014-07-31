@@ -5,14 +5,9 @@ var currencySign = "€";
 var currencyList = 0;
 var currencyRate = 0;
 
-function createXMLHttpRequest() {
-	if(window.XMLHttpRequest) {
-		// code for IE7+, Firefox, Chrome, Opera, Safari
-		return new XMLHttpRequest();
-	} else {
-		alert("Fatal Error, Get a new Browser");
-	}
-}
+//We don't want to spam the user
+var errorRateReported = false;
+var errorBalanceReported = false;
 
 function updateList()
 {
@@ -22,23 +17,25 @@ function updateList()
 	});
 	var html = "";
 	var sum = 0.0;
-	$.each(wallets, function(i, val)
-	{
-		if(typeof(val) == "undefined" || val == null)
-			return;
-		html += "<tr>";
-			html += "<td>" + (("name" in val) ? val["name"] : "/") + "</td>";
-			html += "<td><code>" + (("address" in val) ? val["address"] : "/") + "</code></td>";
-			html += "<td><code>" + (("amount" in val) ? val["amount"] : "0") + " BTC" + "</code></td>";
-			html += "<td><code>" + btcToCurrency(("amount" in val) ? val["amount"] : 0) + " " + currencySign + "</code></td>";
-			html += "<td><button onclick=\"deleteWallet(" + i + ");\" class=\"btn red\">X</button>"
-		html += "</tr>";
-		sum += ("amount" in val) ? val["amount"] : 0;
-	});
-	html += "<tr><td></td><td>Sum</td><td><code>" + sum + " BTC</code></td><td><code>" + btcToCurrency(sum) + " " + currencySign + "</code></td>";
-	$("tbody").html(html);
-	if(localStorage)
-		localStorage.setItem("wallets", JSON.stringify(wallets));
+	setTimeout(function(){
+		$.each(wallets, function(i, val)
+		{
+			if(typeof(val) == "undefined" || val == null)
+				return;
+			html += "<tr>";
+				html += "<td>" + (("name" in val) ? val["name"] : "/") + "</td>";
+				html += "<td><code>" + (("address" in val) ? val["address"] : "/") + "</code></td>";
+				html += "<td><code>" + (("amount" in val) ? val["amount"] : "0") + " BTC" + "</code></td>";
+				html += "<td><code>" + btcToCurrency(("amount" in val) ? val["amount"] : 0) + " " + currencySign + "</code></td>";
+				html += "<td><button onclick=\"deleteWallet(" + i + ");\" class=\"btn red\">X</button>"
+			html += "</tr>";
+			sum += ("amount" in val) ? val["amount"] : 0;
+		});
+		html += "<tr><td></td><td>Sum</td><td><code>" + sum + " BTC</code></td><td><code>" + btcToCurrency(sum) + " " + currencySign + "</code></td>";
+		$("tbody").html(html);
+		if(localStorage)
+			localStorage.setItem("wallets", JSON.stringify(wallets));
+	}, 1000);
 }
 
 function deleteWallet(i)
@@ -60,15 +57,26 @@ function updateCurrency()
 	$.ajax({
 		url: "https://bitpay.com/api/rates",
 		//url: "https://ventos.sculptor.uberspace.de/test.txt",
-		async: false,
+		async: true,
 		dataType: "text",
 		error: function(xhr, status, error) {
+		
 			if(xhr.statusCode > 0)
-				alert("Sorry, but I had a problem while getting the current exchange values from Bitpay; errorcode:" + xhr.statusCode);
+			{
+				//alert("Sorry, but I had a problem while getting the current exchange values from Bitpay; errorcode:" + xhr.statusCode);
+				$("#errorRate").text("Sorry, but I had a problem while getting the current exchange values from Bitpay; errorcode:" + xhr.statusCode);
+				$("#errorRate").removeClass("hide");
+			}
 			else
-				alert("Fatal Error while getting the current exchange values from Bitpay (maybe connection problem)");
+			{
+				//alert("Fatal Error while getting the current exchange values from Bitpay (maybe connection problem)");
+				$("#errorRate").text("Fatal Error while getting the current exchange values from Bitpay (maybe connection problem)");
+				$("#errorRate").removeClass("hide");
+				setTimeout(updateCurrency(), 1000);
+			}
 		},
 		success: function(result){
+			$("#errorRate").addClass("hide");
 			currencyList = JSON.parse(result);
 		}
 	});
@@ -106,14 +114,23 @@ function executeUpdate(i, val)
 		
 	$.ajax({
 		url: "https://blockchain.info/q/addressbalance/" + val["address"],
-		async: false,
+		async: true,
 		error: function(xhr, status, error) {
 			if(xhr.statusCode > 0)
-				alert("Sorry, but I had a problem while getting the address balance; errorcode:" + xhr.statusCode);
+			{
+				//alert("Sorry, but I had a problem while getting the current exchange values from Bitpay; errorcode:" + xhr.statusCode);
+				$("#errorBalance").text("Sorry, but I had a problem while getting the address balance; errorcode:" + xhr.statusCode);
+				$("#errorBalance").removeClass("hide");
+			}
 			else
-				alert("Fatal Error while getting the address balance (maybe connection problem)");
+			{
+				//alert("Fatal Error while getting the current exchange values from Bitpay (maybe connection problem)");
+				$("#errorBalance").text("Fatal Error while getting the address balance (maybe connection problem)");
+				$("#errorBalance").removeClass("hide");
+			}
 		},
 		success: function(result){
+			$("#errorBalance").addClass("hide");
 			wallets[i]["amount"] = parseFloat(result) / 1e8 ;
 			//alert("Balance for " + wallets[i]["address"] + ": " + wallets[i]["amount"] + " BTC");
 		}
@@ -136,7 +153,7 @@ $(document).ready(function(){
 	}, 1000 * 60 * 60);
 	setInterval(function(){
 		updateList();
-	}, 1000 * 60 * 5);
+	}, 1000 * 60 * 1);
 	updateCurrency();
 	updateList(); 
 });

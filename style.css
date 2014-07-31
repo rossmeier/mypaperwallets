@@ -32,3 +32,15 @@ td, th {
 .green	{
 	background: linear-gradient(#35CA47, #26B300) repeat scroll 100% 100%;
 }
+.error {
+	background: #C13832;
+	color: #fafafa;
+	padding: 7px 1em;
+	margin: 0.5em 0;
+	border-radius: 6px;
+}
+#errors{
+	padding: 1em;
+	padding-bottom: 2em;
+}
+.hide { display: none; }
