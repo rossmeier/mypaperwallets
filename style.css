@@ -2,5 +2,33 @@ td {
 	text-align: right;
 }
 td, th {
-	padding: 0  1em;
+	padding: 0 1em;
+}
+#content {
+	padding: 1em;
+	background: linear-gradient(#fefefe, #eeeeee) 100% 100%;
+}
+.btn {
+	border: none;
+	font-size: 14px;
+	padding: 2px 10px;
+	overflow: hidden;
+	border-radius: 4px;
+	color: #fafafa;
+	display: inline;
+	font-family: 'Open Sans', sans-serif;
+	/*width: 100%;*/
+	max-width: 50em;
+}
+.btn:active {
+	box-shadow: inset 0 0 2px #000000;
+}
+.blue {
+	background: linear-gradient(#0095DD, #00539F) repeat scroll 100% 100%;
+}
+.red {
+	background: linear-gradient(#EA3B28, #C13832) repeat scroll 100% 100%;
+}
+.green	{
+	background: linear-gradient(#35CA47, #26B300) repeat scroll 100% 100%;
 }

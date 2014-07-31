@@ -31,7 +31,7 @@ function updateList()
 			html += "<td><code>" + (("address" in val) ? val["address"] : "/") + "</code></td>";
 			html += "<td><code>" + (("amount" in val) ? val["amount"] : "0") + " BTC" + "</code></td>";
 			html += "<td><code>" + btcToCurrency(("amount" in val) ? val["amount"] : 0) + " " + currencySign + "</code></td>";
-			html += "<td><button onclick=\"deleteWallet(" + i + ");\">X</button>"
+			html += "<td><button onclick=\"deleteWallet(" + i + ");\" class=\"btn red\">X</button>"
 		html += "</tr>";
 		sum += ("amount" in val) ? val["amount"] : 0;
 	});
