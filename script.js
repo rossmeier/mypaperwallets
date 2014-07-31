@@ -63,7 +63,10 @@ function updateCurrency()
 		async: false,
 		dataType: "text",
 		error: function(xhr, status, error) {
-			alert("error");
+			if(xhr.statusCode > 0)
+				alert("Sorry, but I had a problem while getting the current exchange values from Bitpay; errorcode:" + xhr.statusCode);
+			else
+				alert("Fatal Error while getting the current exchange values from Bitpay (maybe connection problem)");
 		},
 		success: function(result){
 			currencyList = JSON.parse(result);
@@ -104,6 +107,12 @@ function executeUpdate(i, val)
 	$.ajax({
 		url: "https://blockchain.info/q/addressbalance/" + val["address"],
 		async: false,
+		error: function(xhr, status, error) {
+			if(xhr.statusCode > 0)
+				alert("Sorry, but I had a problem while getting the address balance; errorcode:" + xhr.statusCode);
+			else
+				alert("Fatal Error while getting the address balance (maybe connection problem)");
+		},
 		success: function(result){
 			wallets[i]["amount"] = parseFloat(result) / 1e8 ;
 			//alert("Balance for " + wallets[i]["address"] + ": " + wallets[i]["amount"] + " BTC");
