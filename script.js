@@ -49,7 +49,7 @@ function deleteWallet(i)
 
 function btcToCurrency(btc)
 {
-	return Math.round(btc * currencyRate * 100) / 100;
+	return (Math.round(btc * currencyRate * 100) / 100).toFixed(2);
 }
 
 function updateCurrency()
